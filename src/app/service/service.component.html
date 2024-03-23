@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sidebar</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    .sidebar {
+      width: 250px;
+      height: 100vh;
+      background-color: #333;
+      color: #fff;
+      position: fixed;
+      top: 0;
+      left: 0;
+      transition: all 0.3s ease-in-out;
+      overflow-y: auto;
+    }
+
+    .sidebar-header {
+      padding: 20px;
+      background-color: #222;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sidebar-header h3 {
+      margin: 0;
+    }
+
+    .sidebar-toggle {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .sidebar-links {
+      list-style-type: none;
+      padding: 0;
+      margin: 20px 0;
+    }
+
+    .sidebar-links li {
+      padding: 10px 20px;
+    }
+
+    .sidebar-links li a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 18px;
+    }
+
+    .sidebar-links li a:hover {
+      color: #ccc;
+    }
+
+    .content {
+      margin-left: 250px;
+      padding: 20px;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .form-container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      margin-bottom: 5px;
+    }
+
+    input {
+      padding: 5px;
+      margin-bottom: 10px;
+    }
+
+    select {
+      padding: 5px;
+      margin-bottom: 10px;
+    }
+
+    button {
+      padding: 5px 10px;
+      background-color: #333;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .dropdown {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #f9f9f9;
+      min-width: 160px;
+      box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+      z-index: 1;
+      right: 0;
+    }
+
+    .dropdown-content a {
+      color: black;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+    }
+
+    .dropdown-content a:hover {
+      background-color: #f1f1f1;
+    }
+
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .user-info img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+
+    .sidebar-open {
+      width: 0;
+      overflow: hidden;
+    }
+
+    .content-open {
+      margin-left: 0;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+      }
+
+      .content {
+        margin-left: 0;
+      }
+
+      .dropdown {
+        position: static;
+        margin-top: 20px;
+      }
+
+      .dropdown-content {
+        position: static;
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h3>Sidebar</h3>
+      <button class="sidebar-toggle" id="sidebar-toggle">&times;</button>
+    </div>
+    <ul class="sidebar-links">
+      <li><a href="/homeservice">Home</a></li>
+      <li><a href="service">Add Service</a></li>
+    </ul>
+  </div>
+
+  <div class="content" id="content">
+    <div class="form-container">
+      <h1>Add Service</h1>
+      <form (ngSubmit)="onAddService($event)">
+        <label for="prestataire">Prestataire</label>
+        <input type="text" id="prestataire" [(ngModel)]="newService.prestataire" name="prestataire">
+
+        <label for="name">Description</label>
+        <input type="text" id="name" [(ngModel)]="newService.name" name="name">
+
+        <label for="subcategorie">Subcategorie</label>
+        <input type="text" id="subcategorie" [(ngModel)]="newService.subcategorie" name="subcategorie">
+
+        <label for="categorie">Categorie</label>
+        <select id="categorie" [(ngModel)]="newService.categorie" name="categorie">
+          <option value="1">Category 1</option>
+          <option value="2">Category 2</option>
+          <option value="3">Category 3</option>
+        </select>
+
+        <label for="prix">Prix</label>
+        <input type="number" id="prix" [(ngModel)]="newService.prix" name="prix">
+
+        <label for="image">Image</label>
+        <input type="text" id="image" [(ngModel)]="newService.imageUrl" name="imageUrl">
+
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="dropdown" *ngIf="user">
+    <div class="user-info">
+      <img class="avatar mr-0 mr-sm-16" src="{{ user.photoURL }}" />
+      <span>{{ user.displayName }}</span>
+    </div>
+    <div class="dropdown-content">
+      <a href="#">Profile</a>
+      <a href="#">Settings</a>
+      <a (click)="logout()">Logout</a>
+    </div>
+  </div>
+
+  <script>
+    const sidebar = document.getElementById("sidebar");
+    const content = document.getElementById("content");
+    const sidebarToggle = document.getElementById("sidebar-toggle");
+
+    sidebarToggle.addEventListener("click", () => {
+      sidebar.classList.toggle("sidebar-open");
+      content.classList.toggle("content-open");
+    });
+  </script>
+</body>
+</html>

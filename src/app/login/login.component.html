@@ -1,0 +1,12 @@
+<div class="form-container">
+  <h2>Login</h2>
+  <form (ngSubmit)="onSubmit()">
+    <input type="email" name="email" placeholder="Email" [(ngModel)]="email" required>
+    <input type="password" name="password" placeholder="Password" [(ngModel)]="password" required>
+    <button type="submit">Login</button>
+  </form>
+  <button class="google-signin-btn" (click)="doGoogleLogin()">
+    <img src="assets/google-logo.png" alt="Google logo" class="google-logo">
+    Sign in with Google
+  </button>
+</div>

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Sidebar</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    .sidebar {
+      width: 250px;
+      height: 100vh;
+      background-color: #333;
+      color: #fff;
+      position: fixed;
+      top: 0;
+      left: 0;
+      transition: all 0.3s ease-in-out;
+      overflow-y: auto;
+    }
+
+    .sidebar-header {
+      padding: 20px;
+      background-color: #222;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sidebar-header h3 {
+      margin: 0;
+    }
+
+    .sidebar-toggle {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .sidebar-links {
+      list-style-type: none;
+      padding: 0;
+      margin: 20px 0;
+    }
+
+    .sidebar-links li {
+      padding: 10px 20px;
+    }
+
+    .sidebar-links li a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 18px;
+    }
+
+    .sidebar-links li a:hover {
+      color: #ccc;
+    }
+
+    .content {
+      display: flex;
+      flex-wrap: wrap;
+      margin-left: 250px;
+      padding: 20px;
+      transition: all 0.3s ease-in-out;
+      gap: 10px;
+    }
+
+    .card {
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+      margin: 2px;
+      padding: 16px;
+      width: 300px;
+      height: 400px;
+    }
+
+    .card-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+
+    .card-text {
+      font-size: 1.2rem;
+    }
+
+    .card-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .btn-group {
+      float: right;
+    }
+
+    .btn-primary {
+      background-color: #333;
+      border-color: #333;
+    }
+
+    .btn-danger {
+      background-color: #dc3545;
+      border-color: #dc3545;
+    }
+
+    .dropdown {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #f9f9f9;
+      min-width: 160px;
+      box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+      z-index: 1;
+      right: 0;
+    }
+
+    .dropdown-content a {
+      color: black;
+      padding: 12px 16px;
+      text-decoration: none;
+      display: block;
+    }
+
+    .dropdown-content a:hover {
+      background-color: #f1f1f1;
+    }
+
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .user-info img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+
+    .sidebar-open {
+      width: 0;
+      overflow: hidden;
+    }
+
+    .content-open {
+      margin-left: 0;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+      }
+
+      .content {
+        margin-left: 0;
+      }
+
+      .dropdown {
+        position: static;
+        margin-top: 20px;
+      }
+
+      .dropdown-content {
+        position: static;
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <h3>Sidebar</h3>
+      <button class="sidebar-toggle" id="sidebar-toggle">&times;</button>
+    </div>
+    <ul class="sidebar-links">
+      <li><a href="/homeservice">Home</a></li>
+      <li><a href="service">Add Service</a></li>
+    </ul>
+  </div>
+
+  <div class="content" id="content">
+    <div class="card" *ngFor="let service of services">
+      <div class="card-body">
+        <h5 class="card-title" *ngIf="service.prestataire">{{ service.name }}</h5>
+        <img [src]="service.imageUrl" alt="" class="card-image">
+        <p class="card-text">This is the first card.</p>
+        <p class="card-text" *ngIf="service.subcategorie"><b>Subcategorie: {{ service.subcategorie }}:</b> {{ service.subcategorie }}:</p>
+        <p class="card-text" *ngIf="service.prix"><b>Prix:</b> {{ service.prix }}</p>
+        <div class="btn-group" role="group" aria-label="Basic example">
+          <a (click)="onOpenModal(service, 'edit')" class="btn btn-primary tooltips" data-placement="top" data-original-title="Edit"> edit <i class="fa fa-pencil"></i> </a>
+          <button type="button" class="btn btn-danger" (click)="onDeleteService(service.id)">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dropdown" *ngIf="user">
+    <div  *ngIf="user" class="user-info">
+      <img class="avatar mr-0 mr-sm-16" [src]="user.photoURL" style="border-radius: 50px; width: 40px; height: 40px;" />
+      <span>{{ user.displayName }}</span>
+    </div>
+    <div class="dropdown-content">
+      <a href="#">Profile</a>
+      <a href="#">Settings</a>
+      <a (click)="logout()">Logout</a>
+    </div>
+  </div>
+  
+
+  <script>
+    const sidebar = document.getElementById("sidebar");
+    const content = document.getElementById("content");
+    const sidebarToggle = document.getElementById("sidebar-toggle");
+
+    sidebarToggle.addEventListener("click", () => {
+      sidebar.classList.toggle("sidebar-open");
+      content.classList.toggle("content-open");
+    });
+  </script>
+</body>
+</html>
